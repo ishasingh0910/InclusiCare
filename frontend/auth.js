@@ -6,7 +6,7 @@ window.handleRegister = async function(event) {
     const email = document.getElementById("register-email").value;
     const password = document.getElementById("register-password").value;
 
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -35,7 +35,7 @@ window.handleLogin = async function(event) {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

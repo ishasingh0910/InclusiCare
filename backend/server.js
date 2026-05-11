@@ -16,6 +16,5 @@ app.listen(PORT, () => {
     console.log('Press Ctrl+C to stop.');
 });
 
-
-const authRoutes = require('./backend/routes/authRoutes');
-app.use('/api', authRoutes);
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', authRoutes);

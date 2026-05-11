@@ -1,4 +1,4 @@
-// InclusiCare Auth Logic - V1.1 (Relative Paths)
+// InclusiCare Auth Logic - V2.0 (Cache Busting)
 window.handleRegister = async function(event) {
     event.preventDefault();
     console.log("Register clicked");

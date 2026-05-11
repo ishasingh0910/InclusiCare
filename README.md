@@ -1,5 +1,7 @@
 # InclusiCare - Your Safe Space
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ishasingh0910/InclusiCare)
+
 InclusiCare is a privacy-first, web-based mental wellness platform built to provide emotional safety, anonymity, and calm healing experiences.
 
 ## Features

@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
 });
 
 // ✅ Routes
+app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
 app.use('/api', journalRoutes);
 app.use('/api', authRoutes);
 

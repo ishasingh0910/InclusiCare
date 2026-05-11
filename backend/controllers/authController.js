@@ -30,7 +30,8 @@ exports.registerUser = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            name: user.name
         });
 
     } catch (error) {
@@ -57,7 +58,8 @@ exports.loginUser = async (req, res) => {
 
         res.json({
             success: true,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            name: user.name
         });
 
     } catch (error) {

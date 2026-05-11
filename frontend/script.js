@@ -33,6 +33,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Auth Check ---
+    const token = localStorage.getItem("token");
+    const userName = localStorage.getItem("userName");
+    const userProfile = document.getElementById("user-profile");
+    const userDisplayName = document.getElementById("user-display-name");
+    const logoutBtn = document.getElementById("logout-btn");
+    const greetingText = document.getElementById("greeting-text");
+
+    if (token && userName) {
+        if (userProfile) userProfile.classList.remove("hidden");
+        if (userDisplayName) userDisplayName.textContent = `Hi, ${userName}`;
+        if (greetingText) greetingText.textContent = `Welcome back, ${userName}.`;
+    } else {
+        // Optional: Redirect to login if not authenticated
+        // window.location.href = "login.html";
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userName");
+            window.location.href = "login.html";
+        });
+    }
+
     // --- State ---
     const state = {
         journalTitle: localStorage.getItem('inclusicare_journal_title') || '',

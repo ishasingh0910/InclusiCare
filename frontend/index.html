@@ -35,26 +35,18 @@
 
         <!-- Top Navigation -->
         <nav class="navbar glass-card-nav">
-            <button class="menu-toggle" aria-label="Open Menu">
-                <span></span><span></span><span></span>
-            </button>
             <div class="logo">InclusiCare</div>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-        </nav>
-
-        <!-- Slide-in Side Panel -->
-        <aside class="side-panel">
-            <button class="close-menu" aria-label="Close Menu">&times;</button>
-            <ul class="side-nav-links">
+            
+            <ul class="nav-links">
                 <li><a href="#home" data-page="home">Home</a></li>
                 <li><a href="#companion" data-page="companion">AI Companion</a></li>
                 <li><a href="#journal" data-page="journal">Smart Journal</a></li>
                 <li><a href="#wellbeing" data-page="wellbeing">Mood Tracker</a></li>
-                <li><a href="#soundscapes" data-page="soundscapes">Soundscapes</a></li>
                 <li><a href="#privacy" data-page="privacy">Privacy</a></li>
             </ul>
-        </aside>
-        <div class="side-panel-overlay"></div>
+
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">🌙</button>
+        </nav>
 
         <!-- Main Content Area -->
         <main id="main-content" class="content-viewport">
@@ -164,8 +156,13 @@
 
                     <div class="mood-history-view">
                         <h3>Your Timeline</h3>
-                        <div id="mood-chart" class="mood-chart">
-                            <!-- Bars -->
+                        <div class="mood-chart-wrapper">
+                            <div id="mood-chart" class="mood-chart">
+                                <!-- Bars -->
+                            </div>
+                            <div id="mood-chart-axis" class="mood-chart-axis">
+                                <!-- Axis Labels -->
+                            </div>
                         </div>
                     </div>
                 </div>

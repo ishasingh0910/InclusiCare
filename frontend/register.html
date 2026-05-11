@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - InclusiCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth-layout.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-bg-blobs">
+            <!-- Reuse the same animated background blobs for consistency -->
+            <svg class="blob blob-1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path d="M45.7,-76.1C58.9,-69.3,69.1,-55.3,77.3,-41.1C85.5,-26.9,91.8,-12.5,90.4,1.4C89,15.3,79.9,28.6,70.9,41C61.9,53.4,53,64.9,41.2,72.7C29.4,80.5,14.7,84.6,0.3,84.1C-14.1,83.6,-28.2,78.5,-41.3,71.2C-54.4,63.9,-66.4,54.4,-74.8,42.2C-83.2,30,-88,15,-88.9,-0.5C-89.8,-16,-86.8,-32,-78.9,-45.3C-71,-58.6,-58.2,-69.2,-44.1,-75.5C-30,-81.8,-15,-83.8,-0.2,-83.4C14.6,-83,29.2,-80.2,45.7,-76.1Z" transform="translate(100 100)" />
+            </svg>
+            <svg class="blob blob-2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path d="M39.6,-61.8C52.1,-52.8,63.7,-42.6,71.6,-29.7C79.5,-16.8,83.6,-1.1,82.4,14.4C81.2,29.9,74.7,45.1,63.6,56.1C52.5,67.1,36.8,73.9,20.8,77.9C4.8,81.9,-11.5,83.1,-27.1,78.6C-42.7,74.1,-57.6,63.9,-68.8,50.1C-80,36.3,-87.5,19,-88.4,1.4C-89.3,-16.2,-83.6,-34.1,-72.6,-47.9C-61.6,-61.7,-45.3,-71.4,-30.3,-74.5C-15.3,-77.6,-1.6,-74.1,11.5,-70.7C24.6,-67.3,37.1,-63.9,39.6,-61.8Z" transform="translate(100 100)" />
+            </svg>
+        </div>
+
+        <div class="auth-container">
+            <h1 class="auth-logo">InclusiCare</h1>
+            <p class="auth-subtitle">Create an account to begin your journey.</p>
+
+            <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="auth-input-group">
+                    <label for="register-name" class="auth-label">Full Name</label>
+                    <input type="text" id="register-name" class="auth-input" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="auth-input-group">
+                    <label for="register-email" class="auth-label">Email</label>
+                    <input type="email" id="register-email" class="auth-input" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="register-password" class="auth-label">Password</label>
+                    <input type="password" id="register-password" class="auth-input" placeholder="Create a strong password" required>
+                </div>
+
+                <button type="submit" class="auth-button">Register</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="login.html" class="auth-link">Log in here</a>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="auth.js"></script>
+</body>
+</html>

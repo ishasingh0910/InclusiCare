@@ -636,6 +636,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!moodChart) return;
         moodChart.innerHTML = '';
 
+        const axisContainer = document.getElementById('mood-chart-axis');
+        if (axisContainer) axisContainer.innerHTML = '';
+
         let moods = {};
         try {
             const stored = JSON.parse(localStorage.getItem('inclusicare_moods'));
@@ -643,6 +646,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 moods = stored;
             }
         } catch (e) { }
+
+        if (Object.keys(moods).length === 0) {
+            moodChart.innerHTML = "<p style='opacity:0.6;font-size:0.9rem'>No mood recorded yet.</p>";
+            return;
+        }
 
         const chartDays = [];
         for (let i = 6; i >= 0; i--) {
@@ -655,9 +663,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chartDays.push({
                 date: dateStr,
-                val: moods[dateStr] !== undefined ? moods[dateStr] : 50,
+                val: moods[dateStr] !== undefined ? moods[dateStr] : null,
                 isToday: i === 0,
-                shortDate: `${month}/${day}`
+                shortDate: `${month}/${day}`,
+                dayOfWeek: d.getDay()
             });
         }
 
@@ -675,14 +684,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 bar.classList.add('today-bar');
             }
 
-            bar.style.height = '0%';
-            setTimeout(() => {
-                bar.style.height = `${dayData.val}%`;
-            }, 50);
+            const colors = [
+                "#e63946",  // 1 very low
+                "#e76f51",  // 2
+                "#f4a261",  // 3
+                "#e9c46a",  // 4
+                "#d4d97a",  // 5 neutral
+                "#a8d5ba",  // 6
+                "#7fbf7f",  // 7
+                "#52b788",  // 8
+                "#2a9d8f",  // 9
+                "#1b7f79"   // 10 excellent
+            ];
+
+            if (dayData.val === null) {
+
+                // No mood logged → no bar
+                bar.style.height = "0%";
+                bar.style.background = "transparent";
+                bar.title = "No mood logged";
+
+            } else {
+
+                let colorIndex = Math.floor(dayData.val / 10);
+                if (colorIndex >= colors.length) colorIndex = colors.length - 1;
+
+                bar.style.background = colors[colorIndex];
+
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.height = `${dayData.val * 1.2}%`;
+                }, 50);
+
+                bar.title = `Mood level: ${dayData.val}`;
+
+            }
 
             barContainer.appendChild(bar);
             barContainer.appendChild(tooltip);
             moodChart.appendChild(barContainer);
+
+            if (axisContainer) {
+                const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+                const label = document.createElement('div');
+                label.className = 'axis-label';
+                label.innerText = dayNames[dayData.dayOfWeek];
+                axisContainer.appendChild(label);
+            }
         });
     }
     renderMoodChart();

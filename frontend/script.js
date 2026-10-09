@@ -41,13 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById("logout-btn");
     const greetingText = document.getElementById("greeting-text");
 
+    const navLoginBtn = document.getElementById("nav-login-btn");
+
     if (token && userName) {
         if (userProfile) userProfile.classList.remove("hidden");
         if (userDisplayName) userDisplayName.textContent = `Hi, ${userName}`;
         if (greetingText) greetingText.textContent = `Welcome back, ${userName}.`;
+        if (navLoginBtn) navLoginBtn.classList.add("hidden");
     } else {
-        // Optional: Redirect to login if not authenticated
-        // window.location.href = "login.html";
+        if (userProfile) userProfile.classList.add("hidden");
+        if (navLoginBtn) navLoginBtn.classList.remove("hidden");
     }
 
     if (logoutBtn) {

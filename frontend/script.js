@@ -192,58 +192,117 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Crisis Keywords (suicidal / self-harm) + common misspellings ---
-    const crisisKeywords = [
-        'kill myself', 'want to die', 'wanna die', 'want to kill', 'i want to die',
-        'i want to commit suicide', 'commit suicide', 'suicide', 'suicidal',
-        'sucide', 'suicde', 'suiside', 'suicidal', 'end my life', 'end it all',
-        'take my life', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
-        'cut myself', 'overdose', 'i am dying', "i'm dying", 'no reason to live',
-        'not worth living', 'better off dead', 'wish i was dead', 'wish i were dead',
-        'kill me', 'death wish', 'die tonight', 'end it', 'not worth it anymore',
-        "can't go on", 'cannot go on', 'give up on life', 'goodbye forever',
-        'want to end', 'tired of living', 'life is not worth', 'want to disappear',
-        "can't take it anymore", 'cannot take it anymore', 'no point in living'
+    // =========================================================================
+    // 🚨 EXPANDED SAFETY ENGINE: SYNONYMS, REGEX PATTERNS & REAL-TIME ALERTS
+    // =========================================================================
+
+    // --- 1. CRISIS & SUICIDAL REGEX PATTERNS & ALL SYNONYMS ---
+    const crisisPatterns = [
+        /\b(suicid|suicide|suicidal|sucide|suicde|suiside|seppuku)\b/i,
+        /\b(die|dying|death|dead)\b/i,
+        /\b(kill\s+myself|killing\s+myself|kill\s+me|murder\s+myself)\b/i,
+        /\b(end\s+(my\s+life|it\s+all|everything|my\s+existence|this\s+pain))\b/i,
+        /\b(take\s+my\s+(own\s+)?life)\b/i,
+        /\b(hurt\s+myself|harm\s+myself|self\s*[- ]*harm|cut\s+myself|cutting\s+myself|slit\s+my(\s+wrists?)?)\b/i,
+        /\b(overdose|od\s+on|poison\s+myself|hang\s+myself|hanging\s+myself|noose)\b/i,
+        /\b(jump\s+(off|from)|drown\s+myself|shoot\s+myself|put\s+a\s+bullet)\b/i,
+        /\b(wanna\s+die|want\s+to\s+die|wish\s+i\s+(was|were)\s+dead|rather\s+be\s+dead|better\s+off\s+dead)\b/i,
+        /\b(no\s+(reason|point)\s+(to\s+live|in\s+living)|nothing\s+to\s+live\s+for|tired\s+of\s+living)\b/i,
+        /\b(give\s+up\s+on\s+life|given\s+up\s+on\s+life|can'?t\s+go\s+on|cannot\s+go\s+on|goodbye\s+(cruel\s+)?world|goodbye\s+forever|last\s+goodbye)\b/i,
+        /\b(don'?t\s+want\s+to\s+live|dont\s+want\s+to\s+live|not\s+worth\s+living|ready\s+to\s+die|done\s+with\s+life|want\s+to\s+disappear\s+forever)\b/i,
+        /\b(can'?t\s+take\s+it\s+anymore|cannot\s+take\s+it\s+anymore|no\s+point\s+in\s+anything)\b/i
     ];
 
-    // --- Anxiety Keywords (auto-open SOS breathing) ---
-    const anxietyKeywords = [
-        'anxious', 'anxiety', 'panic attack', 'panic', 'panicking', 'tensed', 'tense',
-        'stressed out', 'stressed', 'stress', 'overwhelmed', 'freaking out', 'freaked out',
-        "can't breathe", 'cannot breathe', 'heart racing', 'heart is racing',
-        'nervous', 'nervousness', 'scared', 'frightened', 'terrified',
-        'shaking', 'trembling', 'worried sick', 'too much pressure',
-        'breaking down', 'losing it', 'losing my mind', 'mind is racing',
-        'racing thoughts', 'spiraling', 'spiralling', 'restless', 'uneasy',
-        'dread', 'dreading', 'feel anxious', 'feeling anxious', 'feel tense',
-        'feel stressed', 'so stressed', 'too stressed', 'very stressed',
-        "can't calm down", 'cannot calm down', 'on edge', 'having a panic'
+    // --- 2. ANXIETY & STRESS REGEX PATTERNS & ALL SYNONYMS ---
+    const anxietyPatterns = [
+        /\b(anxi|anxious|anxiety|anxiousness|angst)\b/i,
+        /\b(stress|stressed|stressing|stressful|stressed\s+out)\b/i,
+        /\b(tense|tensed|tension|tight\s+chest|chest\s+tight)\b/i,
+        /\b(panic|panicking|panicked|panic\s+attack)\b/i,
+        /\b(overwhelm|overwhelmed|overwhelming|overload)\b/i,
+        /\b(freak|freaking|freaked)\s+out\b/i,
+        /\b(nervous|nervousness|on\s+edge|jitter|jittery|jitters)\b/i,
+        /\b(scared|frightened|terrified|petrified|fearful|fear)\b/i,
+        /\b(shaking|trembling|hyperventilat|hyperventilating|sweating\s+from\s+fear)\b/i,
+        /\b(can'?t\s+breathe|cannot\s+breathe|cant\s+breathe|hard\s+to\s+breathe|shortness\s+of\s+breath|suffocat|suffocating|choking)\b/i,
+        /\b(heart\s+(is\s+)?racing|heart\s+pounding|rapid\s+heartbeat|palpitations?)\b/i,
+        /\b(worried|worrying|worried\s+sick|worry|overthink|overthinking)\b/i,
+        /\b(racing\s+thoughts|mind\s+(is\s+)?racing|head\s+(is\s+)?spinning)\b/i,
+        /\b(spiral|spiraling|spiralling)\b/i,
+        /\b(losing\s+(my\s+)?mind|losing\s+control|losing\s+it|breaking\s+down|breakdown|meltdown)\b/i,
+        /\b(uneasy|restless|restlessness|agitat|agitated|agitation)\b/i,
+        /\b(dread|dreading|impending\s+doom|doom)\b/i,
+        /\b(too\s+much\s+pressure|under\s+pressure|can'?t\s+cope|cannot\s+cope|can'?t\s+handle|cant\s+take\s+this)\b/i,
+        /\b(paralyzed\s+with\s+fear|frozen\s+with\s+fear|claustrophobic)\b/i
     ];
 
-    // --- Emergency Alert Sound (using Web Audio API - no file needed) ---
+    function isCrisisMatch(text) {
+        return crisisPatterns.some(rx => rx.test(text));
+    }
+
+    function isAnxietyMatch(text) {
+        return anxietyPatterns.some(rx => rx.test(text));
+    }
+
+    // --- High-Intensity Emergency Police/Ambulance Style Audio Siren ---
+    let emergencyAudioCtx = null;
+    let sirenOsc = null;
+    let sirenGain = null;
+
     function playEmergencyAlert() {
         try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            function beep(freq, start, duration) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0, ctx.currentTime + start);
-                gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + start + 0.05);
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + duration);
-                osc.start(ctx.currentTime + start);
-                osc.stop(ctx.currentTime + start + duration + 0.05);
+            stopEmergencyAlert();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            emergencyAudioCtx = new AudioCtx();
+            if (emergencyAudioCtx.state === 'suspended') {
+                emergencyAudioCtx.resume();
             }
-            // Three urgent beeps
-            beep(880, 0, 0.3);
-            beep(880, 0.4, 0.3);
-            beep(880, 0.8, 0.5);
+
+            sirenOsc = emergencyAudioCtx.createOscillator();
+            sirenGain = emergencyAudioCtx.createGain();
+            sirenOsc.type = 'sawtooth'; // Piercing siren timbre
+
+            sirenOsc.connect(sirenGain);
+            sirenGain.connect(emergencyAudioCtx.destination);
+
+            const now = emergencyAudioCtx.currentTime;
+            sirenGain.gain.setValueAtTime(0.35, now);
+
+            // Wailing siren oscillating between 650Hz and 1050Hz (5 seconds)
+            const cycleDuration = 0.8;
+            const cycles = 6;
+            for (let i = 0; i < cycles; i++) {
+                const start = now + (i * cycleDuration);
+                const mid = start + (cycleDuration / 2);
+                const end = start + cycleDuration;
+                sirenOsc.frequency.setValueAtTime(650, start);
+                sirenOsc.frequency.linearRampToValueAtTime(1050, mid);
+                sirenOsc.frequency.linearRampToValueAtTime(650, end);
+            }
+
+            sirenGain.gain.setValueAtTime(0.35, now + (cycles * cycleDuration) - 0.3);
+            sirenGain.gain.linearRampToValueAtTime(0, now + (cycles * cycleDuration));
+
+            sirenOsc.start(now);
+            sirenOsc.stop(now + (cycles * cycleDuration) + 0.1);
         } catch (e) {
-            console.warn('Audio alert failed:', e);
+            console.warn('Audio alert siren error:', e);
         }
+    }
+
+    function stopEmergencyAlert() {
+        try {
+            if (sirenOsc) {
+                sirenOsc.stop();
+                sirenOsc.disconnect();
+                sirenOsc = null;
+            }
+            if (emergencyAudioCtx) {
+                emergencyAudioCtx.close();
+                emergencyAudioCtx = null;
+            }
+        } catch (e) {}
     }
 
     // --- Emergency Modal Controls ---
@@ -253,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeEmergencyBtn && emergencyModal) {
         closeEmergencyBtn.addEventListener('click', () => {
             emergencyModal.classList.add('hidden');
+            stopEmergencyAlert();
         });
     }
 
@@ -269,9 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function checkAndFireAlert(lowerText) {
-        const isCrisis = crisisKeywords.some(kw => lowerText.includes(kw));
-        const isAnxious = !isCrisis && anxietyKeywords.some(kw => lowerText.includes(kw));
+    function checkAndFireAlert(text) {
+        const isCrisis = isCrisisMatch(text);
+        const isAnxious = !isCrisis && isAnxietyMatch(text);
         if (isCrisis) triggerEmergencyAlert();
         else if (isAnxious) triggerSOSOverlay();
         return { isCrisis, isAnxious };
@@ -282,12 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userInput) {
         userInput.addEventListener('input', () => {
             if (_alertFiredForCurrentInput) return;
-            const lowerText = userInput.value.toLowerCase().trim();
-            if (!lowerText) return;
-            const isCrisis = crisisKeywords.some(kw => lowerText.includes(kw));
-            const isAnxious = !isCrisis && anxietyKeywords.some(kw => lowerText.includes(kw));
+            const text = userInput.value.trim();
+            if (!text || text.length < 3) return;
+            const isCrisis = isCrisisMatch(text);
+            const isAnxious = !isCrisis && isAnxietyMatch(text);
             if (isCrisis || isAnxious) {
-                checkAndFireAlert(lowerText);
+                checkAndFireAlert(text);
                 _alertFiredForCurrentInput = true;
             }
         });

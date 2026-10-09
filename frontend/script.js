@@ -189,28 +189,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Crisis Keywords (suicidal / self-harm) ---
+    // --- Crisis Keywords (suicidal / self-harm) + common misspellings ---
     const crisisKeywords = [
-        'kill myself', 'want to die', 'want to kill', 'i want to die',
+        'kill myself', 'want to die', 'wanna die', 'want to kill', 'i want to die',
         'i want to commit suicide', 'commit suicide', 'suicide', 'suicidal',
-        'end my life', 'end it all', 'take my life', 'hurt myself',
-        'harm myself', 'self harm', 'self-harm', 'cut myself', 'overdose',
-        'i am dying', 'i\'m dying', 'no reason to live', 'not worth living',
-        'better off dead', 'wish i was dead', 'wish i were dead',
+        'sucide', 'suicde', 'suiside', 'suicidal', 'end my life', 'end it all',
+        'take my life', 'hurt myself', 'harm myself', 'self harm', 'self-harm',
+        'cut myself', 'overdose', 'i am dying', "i'm dying", 'no reason to live',
+        'not worth living', 'better off dead', 'wish i was dead', 'wish i were dead',
         'kill me', 'death wish', 'die tonight', 'end it', 'not worth it anymore',
-        'can\'t go on', 'cannot go on', 'give up on life', 'goodbye forever'
+        "can't go on", 'cannot go on', 'give up on life', 'goodbye forever',
+        'want to end', 'tired of living', 'life is not worth', 'want to disappear',
+        "can't take it anymore", 'cannot take it anymore', 'no point in living'
     ];
 
     // --- Anxiety Keywords (auto-open SOS breathing) ---
     const anxietyKeywords = [
-        'anxious', 'anxiety', 'panic', 'panicking', 'tensed', 'tense',
-        'stressed', 'stress', 'overwhelmed', 'freaking out', 'freaked out',
-        'can\'t breathe', 'cannot breathe', 'heart racing', 'heart is racing',
+        'anxious', 'anxiety', 'panic attack', 'panic', 'panicking', 'tensed', 'tense',
+        'stressed out', 'stressed', 'stress', 'overwhelmed', 'freaking out', 'freaked out',
+        "can't breathe", 'cannot breathe', 'heart racing', 'heart is racing',
         'nervous', 'nervousness', 'scared', 'frightened', 'terrified',
         'shaking', 'trembling', 'worried sick', 'too much pressure',
         'breaking down', 'losing it', 'losing my mind', 'mind is racing',
-        'racing thoughts', 'cant stop shaking', 'spiraling', 'spiralling',
-        'restless', 'uneasy', 'dread', 'dreading'
+        'racing thoughts', 'spiraling', 'spiralling', 'restless', 'uneasy',
+        'dread', 'dreading', 'feel anxious', 'feeling anxious', 'feel tense',
+        'feel stressed', 'so stressed', 'too stressed', 'very stressed',
+        "can't calm down", 'cannot calm down', 'on edge', 'having a panic'
     ];
 
     // --- Emergency Alert Sound (using Web Audio API - no file needed) ---
@@ -250,12 +254,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerEmergencyAlert() {
-        if (emergencyModal) {
-            emergencyModal.classList.remove('hidden');
-        }
+        if (emergencyModal) emergencyModal.classList.remove('hidden');
         playEmergencyAlert();
-        // Also show crisis modal with helplines
         if (crisisModal) crisisModal.classList.remove('hidden');
+    }
+
+    function triggerSOSOverlay() {
+        if (panicOverlay) {
+            panicOverlay.classList.remove('hidden');
+            startBreathingCycle();
+        }
+    }
+
+    function checkAndFireAlert(lowerText) {
+        const isCrisis = crisisKeywords.some(kw => lowerText.includes(kw));
+        const isAnxious = !isCrisis && anxietyKeywords.some(kw => lowerText.includes(kw));
+        if (isCrisis) triggerEmergencyAlert();
+        else if (isAnxious) triggerSOSOverlay();
+        return { isCrisis, isAnxious };
+    }
+
+    // --- Real-time as-you-type detection ---
+    let _alertFiredForCurrentInput = false;
+    if (userInput) {
+        userInput.addEventListener('input', () => {
+            if (_alertFiredForCurrentInput) return;
+            const lowerText = userInput.value.toLowerCase().trim();
+            if (!lowerText) return;
+            const isCrisis = crisisKeywords.some(kw => lowerText.includes(kw));
+            const isAnxious = !isCrisis && anxietyKeywords.some(kw => lowerText.includes(kw));
+            if (isCrisis || isAnxious) {
+                checkAndFireAlert(lowerText);
+                _alertFiredForCurrentInput = true;
+            }
+        });
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') _alertFiredForCurrentInput = false;
+        });
     }
 
     function addMessage(text, isUser = false) {
@@ -274,46 +309,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         addMessage(text, true);
         userInput.value = '';
+        _alertFiredForCurrentInput = false;
 
         const lowerText = text.toLowerCase();
 
-        // --- Distraction Mode Trigger ---
+        // --- Distraction Mode ---
         if (conversationMode === "distraction") {
             handleDistractionFlow(lowerText);
             return;
         }
-
         if (lowerText.includes("distraction")) {
             startDistractionMode();
             return;
         }
 
-        // --- 1. Crisis / Suicidal Keywords → Emergency Popup + Sound ---
-        const isCrisis = crisisKeywords.some(keyword => lowerText.includes(keyword));
+        // --- INSTANT alert on send (no delay) ---
+        const { isCrisis, isAnxious } = checkAndFireAlert(lowerText);
 
-        // --- 2. Anxiety Keywords → Auto-open SOS Breathing Overlay ---
-        const isAnxious = !isCrisis && anxietyKeywords.some(keyword => lowerText.includes(keyword));
-
-        const delay = 1000 + Math.random() * 1500;
-
+        // Bot message reply (short natural delay)
         setTimeout(() => {
             if (isCrisis) {
-                triggerEmergencyAlert();
-                addMessage("I hear you and I'm so glad you told me. Please reach out to one of the emergency contacts shown. You are not alone and help is available right now. 💙", false);
+                addMessage("I hear you and I'm so glad you told me. Please reach out to one of the emergency contacts shown. You are not alone — help is here right now. 💙", false);
             } else if (isAnxious) {
-                // Auto-open SOS breathing overlay
-                if (panicOverlay) {
-                    panicOverlay.classList.remove('hidden');
-                    startBreathingCycle();
-                }
-                addMessage("It sounds like things feel really overwhelming right now. I've opened the breathing exercise for you — let's slow down together. 🌿", false);
+                addMessage("It sounds like things feel really overwhelming. I've opened the breathing exercise — let's slow down together. 🌿", false);
             } else {
                 const response = getWarmEmpatheticResponse(lowerText);
                 simulateTyping(response, (finalText) => {
                     addMessage(finalText, false);
                 });
             }
-        }, delay);
+        }, 700);
     }
 
     function getWarmEmpatheticResponse(text) {

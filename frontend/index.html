@@ -263,6 +263,32 @@
         Emotion gently saved ✨
     </div>
 
+    <!-- ⚠️ Emergency Alert Modal (auto-triggered on crisis keywords) -->
+    <div id="emergency-modal" class="emergency-overlay hidden">
+        <div class="emergency-card">
+            <div class="emergency-pulse-ring"></div>
+            <div class="emergency-icon">🆘</div>
+            <h2 class="emergency-title">You Matter. Help Is Here.</h2>
+            <p class="emergency-subtitle">You don't have to face this alone. Please reach out right now.</p>
+
+            <div class="emergency-numbers">
+                <a href="tel:112" class="emergency-call-btn">
+                    📞 Call 112 — Emergency
+                </a>
+                <a href="tel:988" class="emergency-call-btn emergency-call-secondary">
+                    💬 Call / Text 988 — Crisis Line
+                </a>
+                <a href="sms:741741&body=HELLO" class="emergency-call-btn emergency-call-secondary">
+                    📱 Text HELLO to 741741
+                </a>
+            </div>
+
+            <p class="emergency-note">iCall India: <strong>9152987821</strong> &nbsp;|&nbsp; Vandrevala Foundation: <strong>1860-2662-345</strong></p>
+
+            <button id="close-emergency-modal" class="emergency-close-btn">I am reaching out / I am safe</button>
+        </div>
+    </div>
+
     <!-- Mood Insights Modal -->
     <div id="insights-modal" class="modal-overlay hidden">
         <div class="modal-card soft-theme insights-card">

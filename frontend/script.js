@@ -128,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetCrisisModal) resetCrisisModal.classList.add('hidden');
     const resetMoodModal = document.getElementById('mood-modal');
     if (resetMoodModal) resetMoodModal.classList.add('hidden');
+    const resetEmergencyModal = document.getElementById('emergency-modal');
+    if (resetEmergencyModal) resetEmergencyModal.classList.add('hidden');
 
     if (panicBtn && panicOverlay) {
         panicBtn.addEventListener('click', () => {
@@ -187,7 +189,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const crisisKeywords = ['kill', 'die', 'suicide', 'hurt myself', 'end it', 'death'];
+    // --- Crisis Keywords (suicidal / self-harm) ---
+    const crisisKeywords = [
+        'kill myself', 'want to die', 'want to kill', 'i want to die',
+        'i want to commit suicide', 'commit suicide', 'suicide', 'suicidal',
+        'end my life', 'end it all', 'take my life', 'hurt myself',
+        'harm myself', 'self harm', 'self-harm', 'cut myself', 'overdose',
+        'i am dying', 'i\'m dying', 'no reason to live', 'not worth living',
+        'better off dead', 'wish i was dead', 'wish i were dead',
+        'kill me', 'death wish', 'die tonight', 'end it', 'not worth it anymore',
+        'can\'t go on', 'cannot go on', 'give up on life', 'goodbye forever'
+    ];
+
+    // --- Anxiety Keywords (auto-open SOS breathing) ---
+    const anxietyKeywords = [
+        'anxious', 'anxiety', 'panic', 'panicking', 'tensed', 'tense',
+        'stressed', 'stress', 'overwhelmed', 'freaking out', 'freaked out',
+        'can\'t breathe', 'cannot breathe', 'heart racing', 'heart is racing',
+        'nervous', 'nervousness', 'scared', 'frightened', 'terrified',
+        'shaking', 'trembling', 'worried sick', 'too much pressure',
+        'breaking down', 'losing it', 'losing my mind', 'mind is racing',
+        'racing thoughts', 'cant stop shaking', 'spiraling', 'spiralling',
+        'restless', 'uneasy', 'dread', 'dreading'
+    ];
+
+    // --- Emergency Alert Sound (using Web Audio API - no file needed) ---
+    function playEmergencyAlert() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            function beep(freq, start, duration) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0, ctx.currentTime + start);
+                gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + start + 0.05);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + duration);
+                osc.start(ctx.currentTime + start);
+                osc.stop(ctx.currentTime + start + duration + 0.05);
+            }
+            // Three urgent beeps
+            beep(880, 0, 0.3);
+            beep(880, 0.4, 0.3);
+            beep(880, 0.8, 0.5);
+        } catch (e) {
+            console.warn('Audio alert failed:', e);
+        }
+    }
+
+    // --- Emergency Modal Controls ---
+    const emergencyModal = document.getElementById('emergency-modal');
+    const closeEmergencyBtn = document.getElementById('close-emergency-modal');
+
+    if (closeEmergencyBtn && emergencyModal) {
+        closeEmergencyBtn.addEventListener('click', () => {
+            emergencyModal.classList.add('hidden');
+        });
+    }
+
+    function triggerEmergencyAlert() {
+        if (emergencyModal) {
+            emergencyModal.classList.remove('hidden');
+        }
+        playEmergencyAlert();
+        // Also show crisis modal with helplines
+        if (crisisModal) crisisModal.classList.remove('hidden');
+    }
 
     function addMessage(text, isUser = false) {
         const msgDiv = document.createElement('div');
@@ -207,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
 
         const lowerText = text.toLowerCase();
+
         // --- Distraction Mode Trigger ---
         if (conversationMode === "distraction") {
             handleDistractionFlow(lowerText);
@@ -218,15 +288,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // --- 1. Crisis / Suicidal Keywords → Emergency Popup + Sound ---
         const isCrisis = crisisKeywords.some(keyword => lowerText.includes(keyword));
 
+        // --- 2. Anxiety Keywords → Auto-open SOS Breathing Overlay ---
+        const isAnxious = !isCrisis && anxietyKeywords.some(keyword => lowerText.includes(keyword));
 
         const delay = 1000 + Math.random() * 1500;
 
         setTimeout(() => {
             if (isCrisis) {
-                if (crisisModal) crisisModal.classList.remove('hidden');
-                addMessage("That sounds really serious. Please check the resources above. You deserve support.", false);
+                triggerEmergencyAlert();
+                addMessage("I hear you and I'm so glad you told me. Please reach out to one of the emergency contacts shown. You are not alone and help is available right now. 💙", false);
+            } else if (isAnxious) {
+                // Auto-open SOS breathing overlay
+                if (panicOverlay) {
+                    panicOverlay.classList.remove('hidden');
+                    startBreathingCycle();
+                }
+                addMessage("It sounds like things feel really overwhelming right now. I've opened the breathing exercise for you — let's slow down together. 🌿", false);
             } else {
                 const response = getWarmEmpatheticResponse(lowerText);
                 simulateTyping(response, (finalText) => {

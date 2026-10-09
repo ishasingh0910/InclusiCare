@@ -14,7 +14,7 @@
   "name": "inclusicare",
   "version": "1.0.0",
   "description": "InclusiCare is a privacy-first, web-based mental wellness platform built to provide emotional safety, anonymity, and calm healing experiences.",
-  "main": "script.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
